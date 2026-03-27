@@ -8,7 +8,8 @@
     :root {
       --verde: #166534;
       --verde-escuro: #14532d;
-      --fundo: #f4f7f4;
+      --vermelho: #b91c1c;
+      --vermelho-escuro: #991b1b;
       --card: #ffffff;
       --texto: #1f2937;
       --suave: #6b7280;
@@ -17,8 +18,10 @@
       --erro-tx: #991b1b;
       --ok-bg: #dcfce7;
       --ok-tx: #166534;
-      --livre-bg: #f0fdf4;
-      --vendido-bg: #fef2f2;
+      --livre-bg: #dcfce7;
+      --livre-borda: #86efac;
+      --vendido-bg: #fee2e2;
+      --vendido-borda: #fca5a5;
     }
 
     * {
@@ -42,7 +45,7 @@
 
     .card {
       width: 100%;
-      max-width: 900px;
+      max-width: 980px;
       background: var(--card);
       border-radius: 20px;
       overflow: hidden;
@@ -171,65 +174,19 @@
       pointer-events: none;
     }
 
-    .secao-tabela {
+    .secao-cartela {
       margin-top: 28px;
     }
 
-    .secao-tabela h3 {
+    .secao-cartela h3 {
       margin: 0 0 12px;
       font-size: 20px;
-    }
-
-    .table-wrap {
-      overflow-x: auto;
-      border: 1px solid var(--borda);
-      border-radius: 14px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 620px;
-      background: #fff;
-    }
-
-    thead tr {
-      background: #f3f4f6;
-    }
-
-    th, td {
-      padding: 10px 12px;
-      border-bottom: 1px solid #e5e7eb;
-      text-align: left;
-      font-size: 14px;
-    }
-
-    th {
-      font-weight: bold;
-    }
-
-    .status-livre {
-      color: #166534;
-      font-weight: bold;
-    }
-
-    .status-vendido {
-      color: #991b1b;
-      font-weight: bold;
-    }
-
-    .linha-livre {
-      background: var(--livre-bg);
-    }
-
-    .linha-vendido {
-      background: var(--vendido-bg);
     }
 
     .filtros {
       display: flex;
       gap: 10px;
-      margin: 12px 0;
+      margin: 12px 0 18px;
       flex-wrap: wrap;
     }
 
@@ -245,388 +202,68 @@
       background: var(--verde-escuro);
     }
 
-    @media (max-width: 640px) {
-      .stats {
-        grid-template-columns: 1fr;
-      }
-
-      .card {
-        max-width: 100%;
-      }
-
-      .topo h1 {
-        font-size: 24px;
-      }
-    }
     .grade-pontos {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-  gap: 10px;
-  margin-top: 14px;
-}
-
-.ponto {
-  position: relative;
-  border-radius: 14px;
-  padding: 16px 8px;
-  text-align: center;
-  font-weight: bold;
-  font-size: 18px;
-  border: 2px solid transparent;
-  box-shadow: 0 2px 8px rgba(0,0,0,.05);
-}
-
-.ponto.livre {
-  background: #dcfce7;
-  color: #166534;
-  border-color: #86efac;
-}
-
-.ponto.vendido {
-  background: #fee2e2;
-  color: #991b1b;
-  border-color: #fca5a5;
-}
-
-.ponto .numero {
-  display: block;
-  font-size: 20px;
-  line-height: 1;
-}
-
-.ponto .legenda {
-  display: block;
-  font-size: 11px;
-  margin-top: 6px;
-  font-weight: 700;
-}
-
-.ponto .xis {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 34px;
-  font-weight: bold;
-  color: rgba(153, 27, 27, 0.9);
-  pointer-events: none;
-}
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <div class="card">
-      <div class="topo">
-        <h1>Rifa Arraiá da Missão</h1>
-        <p>Prêmio: Ventilador - Dia do Sorteio: 21 de abril - Valor: R$ 2,00</p>
-        <p>Link exclusivo por vendedor</p>
-      </div>
-
-      <div class="conteudo" id="app">
-        <div class="vendedor-box" id="vendedorInfo">Carregando vendedor...</div>
-
-        <div class="stats">
-          <div class="stat">
-            <small>Vendidos na sua cartela</small>
-            <strong id="vendidos">--</strong>
-          </div>
-          <div class="stat">
-            <small>Disponíveis na sua cartela</small>
-            <strong id="disponiveis">--</strong>
-          </div>
-        </div>
-
-        <label for="cliente">Nome do cliente</label>
-        <input type="text" id="cliente" placeholder="Digite o nome completo">
-
-        <label for="telefone">Telefone</label>
-        <input type="tel" id="telefone" placeholder="(85) 99999-9999">
-
-        <label for="numero">Número da rifa</label>
-        <select id="numero">
-          <option value="">Carregando números...</option>
-        </select>
-
-        <div class="hint" id="faixaInfo">
-          Somente os números da sua faixa aparecem aqui.
-        </div>
-
-        <button id="btnSalvar" type="button">Registrar venda</button>
-
-        <div id="msg" class="msg"></div>
-
-        <div class="secao-tabela">
-  <h3>Situação dos pontos</h3>
-
-  <div class="filtros">
-    <button type="button" id="filtroTodos" class="ativo">Todos</button>
-    <button type="button" id="filtroLivres">Somente livres</button>
-    <button type="button" id="filtroVendidos">Somente vendidos</button>
-  </div>
-
-  <div id="gradePontos" class="grade-pontos"></div>
-</div>
-
-          <div class="table-wrap">
-            <table id="tabelaPontos">
-              <thead>
-                <tr>
-                  <th>Número</th>
-                  <th>Status</th>
-                  <th>Cliente</th>
-                  <th>Telefone</th>
-                </tr>
-              </thead>
-              <tbody id="corpoTabelaPontos">
-                <tr>
-                  <td colspan="4">Carregando pontos...</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const API = "https://script.google.com/macros/s/AKfycbxZveduns1HYLWlg61OmNftJatG8rIYolRuHQ58spw-8khlZhE0ZHQGY-_6vBmSGlh5/exec";
-    const vendedor = (new URLSearchParams(window.location.search).get("v") || "").trim().toUpperCase();
-
-    const app = document.getElementById("app");
-    const vendedorInfo = document.getElementById("vendedorInfo");
-    const vendidosEl = document.getElementById("vendidos");
-    const disponiveisEl = document.getElementById("disponiveis");
-    const faixaInfo = document.getElementById("faixaInfo");
-    const numeroSelect = document.getElementById("numero");
-    const clienteInput = document.getElementById("cliente");
-    const telefoneInput = document.getElementById("telefone");
-    const btnSalvar = document.getElementById("btnSalvar");
-    const msg = document.getElementById("msg");
-    const corpoTabelaPontos = document.getElementById("corpoTabelaPontos");
-
-    const filtroTodos = document.getElementById("filtroTodos");
-    const filtroLivres = document.getElementById("filtroLivres");
-    const filtroVendidos = document.getElementById("filtroVendidos");
-
-    let pontosCache = [];
-    let filtroAtual = "todos";
-
-    function mostrarMensagem(texto, tipo) {
-      msg.className = "msg " + tipo;
-      msg.textContent = texto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+      gap: 10px;
     }
 
-    function limparMensagem() {
-      msg.className = "msg";
-      msg.textContent = "";
+    .ponto {
+      position: relative;
+      border-radius: 14px;
+      padding: 16px 8px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 18px;
+      border: 2px solid transparent;
+      box-shadow: 0 2px 8px rgba(0,0,0,.05);
+      min-height: 78px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
     }
 
-    function setLoading(ativo, textoBotao = "Registrar venda") {
-      if (ativo) {
-        app.classList.add("loading");
-        btnSalvar.textContent = textoBotao;
-      } else {
-        app.classList.remove("loading");
-        btnSalvar.textContent = "Registrar venda";
-      }
+    .ponto.livre {
+      background: var(--livre-bg);
+      color: var(--verde);
+      border-color: var(--livre-borda);
     }
 
-    function statusEhLivre(status) {
-      const s = String(status || "").trim().toLowerCase();
-      return s === "disponível" || s === "disponivel";
+    .ponto.vendido {
+      background: var(--vendido-bg);
+      color: var(--vermelho-escuro);
+      border-color: var(--vendido-borda);
     }
 
-    function preencherNumeros(lista) {
-      numeroSelect.innerHTML = '<option value="">Selecione um número</option>';
-
-      if (!Array.isArray(lista) || lista.length === 0) {
-        numeroSelect.innerHTML = '<option value="">Nenhum número disponível</option>';
-        return;
-      }
-
-      lista.forEach(function(numero) {
-        const option = document.createElement("option");
-        option.value = numero;
-        option.textContent = numero;
-        numeroSelect.appendChild(option);
-      });
+    .ponto .numero {
+      display: block;
+      font-size: 20px;
+      line-height: 1;
+      z-index: 2;
     }
 
-    function atualizarBotoesFiltro() {
-      filtroTodos.classList.remove("ativo");
-      filtroLivres.classList.remove("ativo");
-      filtroVendidos.classList.remove("ativo");
-
-      if (filtroAtual === "todos") filtroTodos.classList.add("ativo");
-      if (filtroAtual === "livres") filtroLivres.classList.add("ativo");
-      if (filtroAtual === "vendidos") filtroVendidos.classList.add("ativo");
+    .ponto .legenda {
+      display: block;
+      font-size: 10px;
+      margin-top: 6px;
+      font-weight: 700;
+      z-index: 2;
     }
 
-    function preencherTabelaPontos(lista) {
-      corpoTabelaPontos.innerHTML = "";
-
-      let listaFiltrada = lista;
-
-      if (filtroAtual === "livres") {
-        listaFiltrada = lista.filter(item => statusEhLivre(item.status));
-      }
-
-      if (filtroAtual === "vendidos") {
-        listaFiltrada = lista.filter(item => !statusEhLivre(item.status));
-      }
-
-      if (!Array.isArray(listaFiltrada) || listaFiltrada.length === 0) {
-        corpoTabelaPontos.innerHTML = `
-          <tr>
-            <td colspan="4" style="padding:12px; text-align:center;">
-              Nenhum ponto encontrado.
-            </td>
-          </tr>
-        `;
-        return;
-      }
-
-      listaFiltrada.forEach(function(item) {
-        const livre = statusEhLivre(item.status);
-        const tr = document.createElement("tr");
-
-        tr.className = livre ? "linha-livre" : "linha-vendido";
-
-        tr.innerHTML = `
-          <td>${item.numero}</td>
-          <td class="${livre ? 'status-livre' : 'status-vendido'}">
-            ${livre ? 'Livre' : 'Vendido'}
-          </td>
-          <td>${item.cliente || '-'}</td>
-          <td>${item.telefone || '-'}</td>
-        `;
-
-        corpoTabelaPontos.appendChild(tr);
-      });
+    .ponto .xis {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: bold;
+      color: rgba(153, 27, 27, 0.90);
+      pointer-events: none;
+      z-index: 1;
     }
 
-    async function iniciar() {
-      limparMensagem();
-
-      if (!vendedor) {
-        mostrarMensagem("Esse link está sem código de vendedor. Use o link com ?v=V001", "erro");
-        vendedorInfo.textContent = "Vendedor não identificado";
-        preencherNumeros([]);
-        preencherTabelaPontos([]);
-        return;
-      }
-
-      setLoading(true, "Carregando...");
-
-      try {
-        const res = await fetch(API + "?acao=inicial&v=" + encodeURIComponent(vendedor));
-        const dados = await res.json();
-
-        if (!dados.ok) {
-          mostrarMensagem(dados.msg || "Erro ao carregar dados.", "erro");
-          vendedorInfo.textContent = "Vendedor não encontrado";
-          vendidosEl.textContent = "--";
-          disponiveisEl.textContent = "--";
-          faixaInfo.textContent = "Não foi possível carregar a faixa.";
-          preencherNumeros([]);
-          preencherTabelaPontos([]);
-          return;
-        }
-
-        vendedorInfo.textContent = dados.vendedor.codigo + " - " + dados.vendedor.nome;
-        vendidosEl.textContent = dados.vendidos;
-        disponiveisEl.textContent = dados.disponiveis;
-        faixaInfo.textContent = "Sua faixa: " + dados.vendedor.inicio + " a " + dados.vendedor.fim;
-
-        preencherNumeros(dados.numeros);
-
-        pontosCache = Array.isArray(dados.pontos) ? dados.pontos : [];
-        preencherTabelaPontos(pontosCache);
-      } catch (erro) {
-        mostrarMensagem("Erro ao carregar os dados do vendedor.", "erro");
-        vendedorInfo.textContent = "Erro ao carregar vendedor";
-        preencherNumeros([]);
-        preencherTabelaPontos([]);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    async function salvarVenda() {
-      limparMensagem();
-
-      if (!vendedor) {
-        mostrarMensagem("Link sem vendedor definido.", "erro");
-        return;
-      }
-
-      const nome = clienteInput.value.trim();
-      const telefone = telefoneInput.value.trim();
-      const numero = numeroSelect.value;
-
-      if (!nome || !telefone || !numero) {
-        mostrarMensagem("Preencha todos os campos.", "erro");
-        return;
-      }
-
-      setLoading(true, "Salvando...");
-
-      try {
-        const res = await fetch(API, {
-          method: "POST",
-          headers: {
-            "Content-Type": "text/plain;charset=utf-8"
-          },
-          body: JSON.stringify({
-            vendedor: vendedor,
-            nome: nome,
-            telefone: telefone,
-            numero: numero
-          })
-        });
-
-        const resposta = await res.json();
-
-        if (resposta.ok) {
-          mostrarMensagem(resposta.msg, "ok");
-          clienteInput.value = "";
-          telefoneInput.value = "";
-          numeroSelect.value = "";
-          await iniciar();
-        } else {
-          mostrarMensagem(resposta.msg || "Erro ao registrar venda.", "erro");
-        }
-      } catch (erro) {
-        mostrarMensagem("Erro ao enviar os dados.", "erro");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    filtroTodos.addEventListener("click", function() {
-      filtroAtual = "todos";
-      atualizarBotoesFiltro();
-      preencherTabelaPontos(pontosCache);
-    });
-
-    filtroLivres.addEventListener("click", function() {
-      filtroAtual = "livres";
-      atualizarBotoesFiltro();
-      preencherTabelaPontos(pontosCache);
-    });
-
-    filtroVendidos.addEventListener("click", function() {
-      filtroAtual = "vendidos";
-      atualizarBotoesFiltro();
-      preencherTabelaPontos(pontosCache);
-    });
-
-    btnSalvar.addEventListener("click", salvarVenda);
-
-    atualizarBotoesFiltro();
-    iniciar();
-  </script>
-</body>
-</html>
+    .rodape {
+      text-align: center;
+      padding: 22px 20px 26
