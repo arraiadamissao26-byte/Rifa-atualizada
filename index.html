@@ -17,6 +17,8 @@
       --erro-tx: #991b1b;
       --ok-bg: #dcfce7;
       --ok-tx: #166534;
+      --livre-bg: #f0fdf4;
+      --vendido-bg: #fef2f2;
     }
 
     * {
@@ -33,14 +35,14 @@
     .wrap {
       min-height: 100vh;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
       padding: 18px;
     }
 
     .card {
       width: 100%;
-      max-width: 520px;
+      max-width: 900px;
       background: var(--card);
       border-radius: 20px;
       overflow: hidden;
@@ -168,14 +170,101 @@
       opacity: .7;
       pointer-events: none;
     }
+
+    .secao-tabela {
+      margin-top: 28px;
+    }
+
+    .secao-tabela h3 {
+      margin: 0 0 12px;
+      font-size: 20px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--borda);
+      border-radius: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 620px;
+      background: #fff;
+    }
+
+    thead tr {
+      background: #f3f4f6;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      font-weight: bold;
+    }
+
+    .status-livre {
+      color: #166534;
+      font-weight: bold;
+    }
+
+    .status-vendido {
+      color: #991b1b;
+      font-weight: bold;
+    }
+
+    .linha-livre {
+      background: var(--livre-bg);
+    }
+
+    .linha-vendido {
+      background: var(--vendido-bg);
+    }
+
+    .filtros {
+      display: flex;
+      gap: 10px;
+      margin: 12px 0;
+      flex-wrap: wrap;
+    }
+
+    .filtros button {
+      width: auto;
+      margin-top: 0;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+    }
+
+    .filtros button.ativo {
+      background: var(--verde-escuro);
+    }
+
+    @media (max-width: 640px) {
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        max-width: 100%;
+      }
+
+      .topo h1 {
+        font-size: 24px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="card">
       <div class="topo">
-        <h1>Rifa Arraiá da Missão</h1>
-        <p>Prêmio: Ventilador - Dia do Sorteio: 21 de abril</p>
+        <h1>Venda de Rifa</h1>
         <p>Link exclusivo por vendedor</p>
       </div>
 
@@ -211,6 +300,34 @@
         <button id="btnSalvar" type="button">Registrar venda</button>
 
         <div id="msg" class="msg"></div>
+
+        <div class="secao-tabela">
+          <h3>Situação dos pontos</h3>
+
+          <div class="filtros">
+            <button type="button" id="filtroTodos" class="ativo">Todos</button>
+            <button type="button" id="filtroLivres">Somente livres</button>
+            <button type="button" id="filtroVendidos">Somente vendidos</button>
+          </div>
+
+          <div class="table-wrap">
+            <table id="tabelaPontos">
+              <thead>
+                <tr>
+                  <th>Número</th>
+                  <th>Status</th>
+                  <th>Cliente</th>
+                  <th>Telefone</th>
+                </tr>
+              </thead>
+              <tbody id="corpoTabelaPontos">
+                <tr>
+                  <td colspan="4">Carregando pontos...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -229,6 +346,14 @@
     const telefoneInput = document.getElementById("telefone");
     const btnSalvar = document.getElementById("btnSalvar");
     const msg = document.getElementById("msg");
+    const corpoTabelaPontos = document.getElementById("corpoTabelaPontos");
+
+    const filtroTodos = document.getElementById("filtroTodos");
+    const filtroLivres = document.getElementById("filtroLivres");
+    const filtroVendidos = document.getElementById("filtroVendidos");
+
+    let pontosCache = [];
+    let filtroAtual = "todos";
 
     function mostrarMensagem(texto, tipo) {
       msg.className = "msg " + tipo;
@@ -250,6 +375,11 @@
       }
     }
 
+    function statusEhLivre(status) {
+      const s = String(status || "").trim().toLowerCase();
+      return s === "disponível" || s === "disponivel";
+    }
+
     function preencherNumeros(lista) {
       numeroSelect.innerHTML = '<option value="">Selecione um número</option>';
 
@@ -266,6 +396,59 @@
       });
     }
 
+    function atualizarBotoesFiltro() {
+      filtroTodos.classList.remove("ativo");
+      filtroLivres.classList.remove("ativo");
+      filtroVendidos.classList.remove("ativo");
+
+      if (filtroAtual === "todos") filtroTodos.classList.add("ativo");
+      if (filtroAtual === "livres") filtroLivres.classList.add("ativo");
+      if (filtroAtual === "vendidos") filtroVendidos.classList.add("ativo");
+    }
+
+    function preencherTabelaPontos(lista) {
+      corpoTabelaPontos.innerHTML = "";
+
+      let listaFiltrada = lista;
+
+      if (filtroAtual === "livres") {
+        listaFiltrada = lista.filter(item => statusEhLivre(item.status));
+      }
+
+      if (filtroAtual === "vendidos") {
+        listaFiltrada = lista.filter(item => !statusEhLivre(item.status));
+      }
+
+      if (!Array.isArray(listaFiltrada) || listaFiltrada.length === 0) {
+        corpoTabelaPontos.innerHTML = `
+          <tr>
+            <td colspan="4" style="padding:12px; text-align:center;">
+              Nenhum ponto encontrado.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      listaFiltrada.forEach(function(item) {
+        const livre = statusEhLivre(item.status);
+        const tr = document.createElement("tr");
+
+        tr.className = livre ? "linha-livre" : "linha-vendido";
+
+        tr.innerHTML = `
+          <td>${item.numero}</td>
+          <td class="${livre ? 'status-livre' : 'status-vendido'}">
+            ${livre ? 'Livre' : 'Vendido'}
+          </td>
+          <td>${item.cliente || '-'}</td>
+          <td>${item.telefone || '-'}</td>
+        `;
+
+        corpoTabelaPontos.appendChild(tr);
+      });
+    }
+
     async function iniciar() {
       limparMensagem();
 
@@ -273,6 +456,7 @@
         mostrarMensagem("Esse link está sem código de vendedor. Use o link com ?v=V001", "erro");
         vendedorInfo.textContent = "Vendedor não identificado";
         preencherNumeros([]);
+        preencherTabelaPontos([]);
         return;
       }
 
@@ -289,6 +473,7 @@
           disponiveisEl.textContent = "--";
           faixaInfo.textContent = "Não foi possível carregar a faixa.";
           preencherNumeros([]);
+          preencherTabelaPontos([]);
           return;
         }
 
@@ -298,10 +483,14 @@
         faixaInfo.textContent = "Sua faixa: " + dados.vendedor.inicio + " a " + dados.vendedor.fim;
 
         preencherNumeros(dados.numeros);
+
+        pontosCache = Array.isArray(dados.pontos) ? dados.pontos : [];
+        preencherTabelaPontos(pontosCache);
       } catch (erro) {
         mostrarMensagem("Erro ao carregar os dados do vendedor.", "erro");
         vendedorInfo.textContent = "Erro ao carregar vendedor";
         preencherNumeros([]);
+        preencherTabelaPontos([]);
       } finally {
         setLoading(false);
       }
@@ -358,8 +547,27 @@
       }
     }
 
+    filtroTodos.addEventListener("click", function() {
+      filtroAtual = "todos";
+      atualizarBotoesFiltro();
+      preencherTabelaPontos(pontosCache);
+    });
+
+    filtroLivres.addEventListener("click", function() {
+      filtroAtual = "livres";
+      atualizarBotoesFiltro();
+      preencherTabelaPontos(pontosCache);
+    });
+
+    filtroVendidos.addEventListener("click", function() {
+      filtroAtual = "vendidos";
+      atualizarBotoesFiltro();
+      preencherTabelaPontos(pontosCache);
+    });
+
     btnSalvar.addEventListener("click", salvarVenda);
 
+    atualizarBotoesFiltro();
     iniciar();
   </script>
 </body>
