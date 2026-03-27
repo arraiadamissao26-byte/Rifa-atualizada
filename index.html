@@ -20,8 +20,11 @@
       --ok-tx: #166534;
       --livre-bg: #dcfce7;
       --livre-borda: #86efac;
-      --vendido-bg: #fee2e2;
-      --vendido-borda: #fca5a5;
+      --vendido-bg: #fecaca;
+      --vendido-borda: #f87171;
+      --selecionado-bg: #fde68a;
+      --selecionado-borda: #f59e0b;
+      --selecionado-tx: #92400e;
     }
 
     * {
@@ -40,7 +43,7 @@
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      padding: 18px;
+      padding: 12px;
     }
 
     .card {
@@ -56,13 +59,13 @@
     .topo {
       background: var(--verde);
       color: #fff;
-      padding: 24px 20px;
+      padding: 20px 16px;
       text-align: center;
     }
 
     .topo h1 {
       margin: 0;
-      font-size: 28px;
+      font-size: 26px;
     }
 
     .topo p {
@@ -72,7 +75,7 @@
     }
 
     .conteudo {
-      padding: 20px;
+      padding: 16px;
     }
 
     .vendedor-box {
@@ -89,14 +92,14 @@
     .stats {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      gap: 10px;
       margin-bottom: 16px;
     }
 
     .stat {
       border: 1px solid var(--borda);
       border-radius: 14px;
-      padding: 14px;
+      padding: 12px;
       background: #fafafa;
     }
 
@@ -107,7 +110,7 @@
     }
 
     .stat strong {
-      font-size: 24px;
+      font-size: 22px;
     }
 
     label {
@@ -116,7 +119,7 @@
       font-weight: bold;
     }
 
-    input, select, button {
+    input, button {
       width: 100%;
       padding: 14px;
       border-radius: 12px;
@@ -125,7 +128,7 @@
       outline: none;
     }
 
-    input:focus, select:focus {
+    input:focus {
       border-color: var(--verde);
       box-shadow: 0 0 0 3px rgba(22,101,52,.12);
     }
@@ -174,6 +177,16 @@
       pointer-events: none;
     }
 
+    .numero-escolhido-box {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #fff7ed;
+      border: 1px solid #fdba74;
+      color: #9a3412;
+      font-weight: bold;
+    }
+
     .secao-cartela {
       margin-top: 28px;
     }
@@ -183,9 +196,46 @@
       font-size: 20px;
     }
 
-    .filtros {
+    .legenda {
       display: flex;
       gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .legenda-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--suave);
+    }
+
+    .legenda-cor {
+      width: 16px;
+      height: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .cor-livre {
+      background: var(--livre-bg);
+      border-color: var(--livre-borda);
+    }
+
+    .cor-vendido {
+      background: var(--vendido-bg);
+      border-color: var(--vendido-borda);
+    }
+
+    .cor-selecionado {
+      background: var(--selecionado-bg);
+      border-color: var(--selecionado-borda);
+    }
+
+    .filtros {
+      display: flex;
+      gap: 8px;
       margin: 12px 0 18px;
       flex-wrap: wrap;
     }
@@ -193,9 +243,9 @@
     .filtros button {
       width: auto;
       margin-top: 0;
-      padding: 10px 14px;
+      padding: 10px 12px;
       border-radius: 999px;
-      font-size: 14px;
+      font-size: 13px;
     }
 
     .filtros button.ativo {
@@ -204,64 +254,63 @@
 
     .grade-pontos {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
     }
 
     .ponto {
       position: relative;
-      border-radius: 14px;
-      padding: 16px 8px;
+      border-radius: 12px;
+      padding: 10px 4px;
       text-align: center;
       font-weight: bold;
-      font-size: 18px;
+      font-size: 16px;
       border: 2px solid transparent;
       box-shadow: 0 2px 8px rgba(0,0,0,.05);
-      min-height: 78px;
+      min-height: 54px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-direction: column;
+      user-select: none;
+    }
+
+    .ponto .numero {
+      display: block;
+      line-height: 1;
+    }
+
+    .ponto .mini-status {
+      margin-top: 4px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .3px;
     }
 
     .ponto.livre {
       background: var(--livre-bg);
       color: var(--verde);
       border-color: var(--livre-borda);
+      cursor: pointer;
+    }
+
+    .ponto.livre:hover {
+      transform: translateY(-1px);
     }
 
     .ponto.vendido {
       background: var(--vendido-bg);
       color: var(--vermelho-escuro);
       border-color: var(--vendido-borda);
+      cursor: not-allowed;
+      opacity: .95;
     }
 
-    .ponto .numero {
-      display: block;
-      font-size: 20px;
-      line-height: 1;
-      z-index: 2;
-    }
-
-    .ponto .legenda {
-      display: block;
-      font-size: 10px;
-      margin-top: 6px;
-      font-weight: 700;
-      z-index: 2;
-    }
-
-    .ponto .xis {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 36px;
-      font-weight: bold;
-      color: rgba(153, 27, 27, 0.90);
-      pointer-events: none;
-      z-index: 1;
+    .ponto.selecionado {
+      background: var(--selecionado-bg);
+      color: var(--selecionado-tx);
+      border-color: var(--selecionado-borda);
+      box-shadow: 0 0 0 3px rgba(245,158,11,.18);
     }
 
     .rodape {
@@ -281,6 +330,18 @@
       text-decoration: underline;
     }
 
+    @media (min-width: 520px) {
+      .grade-pontos {
+        grid-template-columns: repeat(8, 1fr);
+      }
+    }
+
+    @media (min-width: 768px) {
+      .grade-pontos {
+        grid-template-columns: repeat(10, 1fr);
+      }
+    }
+
     @media (max-width: 640px) {
       .stats {
         grid-template-columns: 1fr;
@@ -289,10 +350,6 @@
       .topo h1 {
         font-size: 24px;
       }
-
-      .grade-pontos {
-        grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
-      }
     }
   </style>
 </head>
@@ -300,10 +357,8 @@
   <div class="wrap">
     <div class="card">
       <div class="topo">
-        <h1>Rifa Arraiá da missão</h1>
-        <p>Prêmio: Ventilador - Dia do Sorteio: 21 de abril</p>
-        <p>Valor: R$ 2,00</p>
-        <p>Link exclusivo por vendedor</p>
+        <h1>Venda de Rifa</h1>
+        <p>Escolha o número direto na cartela</p>
       </div>
 
       <div class="conteudo" id="app">
@@ -326,13 +381,12 @@
         <label for="telefone">Telefone</label>
         <input type="tel" id="telefone" placeholder="(85) 99999-9999">
 
-        <label for="numero">Número da rifa</label>
-        <select id="numero">
-          <option value="">Carregando números...</option>
-        </select>
+        <div class="numero-escolhido-box" id="numeroEscolhidoBox">
+          Número escolhido: <span id="numeroEscolhido">Nenhum</span>
+        </div>
 
         <div class="hint" id="faixaInfo">
-          Somente os números da sua faixa aparecem aqui.
+          Toque somente nos números verdes da sua cartela.
         </div>
 
         <button id="btnSalvar" type="button">Registrar venda</button>
@@ -341,6 +395,21 @@
 
         <div class="secao-cartela">
           <h3>Cartela de pontos</h3>
+
+          <div class="legenda">
+            <div class="legenda-item">
+              <span class="legenda-cor cor-livre"></span>
+              <span>Livre</span>
+            </div>
+            <div class="legenda-item">
+              <span class="legenda-cor cor-vendido"></span>
+              <span>Vendido</span>
+            </div>
+            <div class="legenda-item">
+              <span class="legenda-cor cor-selecionado"></span>
+              <span>Selecionado</span>
+            </div>
+          </div>
 
           <div class="filtros">
             <button type="button" id="filtroTodos" class="ativo">Todos</button>
@@ -370,12 +439,12 @@
     const vendidosEl = document.getElementById("vendidos");
     const disponiveisEl = document.getElementById("disponiveis");
     const faixaInfo = document.getElementById("faixaInfo");
-    const numeroSelect = document.getElementById("numero");
     const clienteInput = document.getElementById("cliente");
     const telefoneInput = document.getElementById("telefone");
     const btnSalvar = document.getElementById("btnSalvar");
     const msg = document.getElementById("msg");
     const gradePontos = document.getElementById("gradePontos");
+    const numeroEscolhidoEl = document.getElementById("numeroEscolhido");
 
     const filtroTodos = document.getElementById("filtroTodos");
     const filtroLivres = document.getElementById("filtroLivres");
@@ -383,6 +452,7 @@
 
     let pontosCache = [];
     let filtroAtual = "todos";
+    let numeroSelecionado = "";
 
     function mostrarMensagem(texto, tipo) {
       msg.className = "msg " + tipo;
@@ -409,20 +479,8 @@
       return s === "disponível" || s === "disponivel";
     }
 
-    function preencherNumeros(lista) {
-      numeroSelect.innerHTML = '<option value="">Selecione um número</option>';
-
-      if (!Array.isArray(lista) || lista.length === 0) {
-        numeroSelect.innerHTML = '<option value="">Nenhum número disponível</option>';
-        return;
-      }
-
-      lista.forEach(function(numero) {
-        const option = document.createElement("option");
-        option.value = numero;
-        option.textContent = numero;
-        numeroSelect.appendChild(option);
-      });
+    function atualizarNumeroEscolhido() {
+      numeroEscolhidoEl.textContent = numeroSelecionado || "Nenhum";
     }
 
     function atualizarBotoesFiltro() {
@@ -433,6 +491,12 @@
       if (filtroAtual === "todos") filtroTodos.classList.add("ativo");
       if (filtroAtual === "livres") filtroLivres.classList.add("ativo");
       if (filtroAtual === "vendidos") filtroVendidos.classList.add("ativo");
+    }
+
+    function selecionarNumero(numero) {
+      numeroSelecionado = String(numero);
+      atualizarNumeroEscolhido();
+      preencherGradePontos(pontosCache);
     }
 
     function preencherGradePontos(lista) {
@@ -460,14 +524,20 @@
       listaFiltrada.forEach(function(item) {
         const livre = statusEhLivre(item.status);
         const div = document.createElement("div");
+        const estaSelecionado = String(item.numero) === String(numeroSelecionado);
 
-        div.className = "ponto " + (livre ? "livre" : "vendido");
+        div.className = "ponto " + (livre ? "livre" : "vendido") + (estaSelecionado ? " selecionado" : "");
 
         div.innerHTML = `
           <span class="numero">${item.numero}</span>
-          <span class="legenda">${livre ? "LIVRE" : "VENDIDO"}</span>
-          ${livre ? "" : '<span class="xis">✕</span>'}
+          <span class="mini-status">${livre ? "LIVRE" : "VENDIDO"}</span>
         `;
+
+        if (livre) {
+          div.addEventListener("click", function() {
+            selecionarNumero(item.numero);
+          });
+        }
 
         gradePontos.appendChild(div);
       });
@@ -479,7 +549,6 @@
       if (!vendedor) {
         mostrarMensagem("Esse link está sem código de vendedor. Use o link com ?v=V001", "erro");
         vendedorInfo.textContent = "Vendedor não identificado";
-        preencherNumeros([]);
         preencherGradePontos([]);
         return;
       }
@@ -496,7 +565,6 @@
           vendidosEl.textContent = "--";
           disponiveisEl.textContent = "--";
           faixaInfo.textContent = "Não foi possível carregar a faixa.";
-          preencherNumeros([]);
           preencherGradePontos([]);
           return;
         }
@@ -504,16 +572,22 @@
         vendedorInfo.textContent = dados.vendedor.codigo + " - " + dados.vendedor.nome;
         vendidosEl.textContent = dados.vendidos;
         disponiveisEl.textContent = dados.disponiveis;
-        faixaInfo.textContent = "Sua faixa: " + dados.vendedor.inicio + " a " + dados.vendedor.fim;
-
-        preencherNumeros(dados.numeros);
+        faixaInfo.textContent = "Sua faixa: " + dados.vendedor.inicio + " a " + dados.vendedor.fim + ". Toque apenas nos números verdes.";
 
         pontosCache = Array.isArray(dados.pontos) ? dados.pontos : [];
+
+        if (numeroSelecionado) {
+          const aindaExiste = pontosCache.some(p => String(p.numero) === String(numeroSelecionado) && statusEhLivre(p.status));
+          if (!aindaExiste) {
+            numeroSelecionado = "";
+          }
+        }
+
+        atualizarNumeroEscolhido();
         preencherGradePontos(pontosCache);
       } catch (erro) {
         mostrarMensagem("Erro ao carregar os dados do vendedor.", "erro");
         vendedorInfo.textContent = "Erro ao carregar vendedor";
-        preencherNumeros([]);
         preencherGradePontos([]);
       } finally {
         setLoading(false);
@@ -530,10 +604,10 @@
 
       const nome = clienteInput.value.trim();
       const telefone = telefoneInput.value.trim();
-      const numero = numeroSelect.value;
+      const numero = String(numeroSelecionado || "").trim();
 
       if (!nome || !telefone || !numero) {
-        mostrarMensagem("Preencha todos os campos.", "erro");
+        mostrarMensagem("Preencha nome, telefone e escolha um número verde na cartela.", "erro");
         return;
       }
 
@@ -559,7 +633,8 @@
           mostrarMensagem(resposta.msg, "ok");
           clienteInput.value = "";
           telefoneInput.value = "";
-          numeroSelect.value = "";
+          numeroSelecionado = "";
+          atualizarNumeroEscolhido();
           await iniciar();
         } else {
           mostrarMensagem(resposta.msg || "Erro ao registrar venda.", "erro");
@@ -592,6 +667,7 @@
     btnSalvar.addEventListener("click", salvarVenda);
 
     atualizarBotoesFiltro();
+    atualizarNumeroEscolhido();
     iniciar();
   </script>
 </body>
