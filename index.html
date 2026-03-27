@@ -8,7 +8,6 @@
     :root {
       --verde: #166534;
       --verde-escuro: #14532d;
-      --vermelho: #b91c1c;
       --vermelho-escuro: #991b1b;
       --card: #ffffff;
       --texto: #1f2937;
@@ -25,6 +24,7 @@
       --selecionado-bg: #fde68a;
       --selecionado-borda: #f59e0b;
       --selecionado-tx: #92400e;
+      --integralis-solucoes: #d4148e;
     }
 
     * {
@@ -59,8 +59,17 @@
     .topo {
       background: var(--verde);
       color: #fff;
-      padding: 20px 16px;
+      padding: 18px 16px 20px;
       text-align: center;
+    }
+
+    .topo-logo {
+      display: block;
+      margin: 0 auto 10px;
+      max-width: 230px;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
     }
 
     .topo h1 {
@@ -240,7 +249,8 @@
       flex-wrap: wrap;
     }
 
-    .filtros button {
+    .filtros button,
+    .btn-vendidos {
       width: auto;
       margin-top: 0;
       padding: 10px 12px;
@@ -250,6 +260,68 @@
 
     .filtros button.ativo {
       background: var(--verde-escuro);
+    }
+
+    .acoes-topo {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 16px 0 6px;
+    }
+
+    .btn-vendidos {
+      background: #1f2937;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-vendidos:hover {
+      background: #111827;
+    }
+
+    .painel-vendidos {
+      margin-top: 12px;
+      border: 1px solid var(--borda);
+      border-radius: 14px;
+      background: #fff;
+      padding: 14px;
+      display: none;
+    }
+
+    .painel-vendidos.aberto {
+      display: block;
+    }
+
+    .painel-vendidos h4 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+
+    .lista-vendidos {
+      display: grid;
+      gap: 8px;
+      max-height: 320px;
+      overflow-y: auto;
+    }
+
+    .item-vendido {
+      border: 1px solid #fecaca;
+      background: #fff5f5;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 14px;
+    }
+
+    .item-vendido strong {
+      color: var(--vermelho-escuro);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .sem-vendidos {
+      color: var(--suave);
+      font-size: 14px;
     }
 
     .grade-pontos {
@@ -318,16 +390,43 @@
       padding: 22px 20px 26px;
       color: var(--suave);
       font-size: 14px;
+      border-top: 1px solid #f3f4f6;
     }
 
-    .rodape a {
-      color: var(--verde);
-      font-weight: bold;
+    .rodape-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-integralis {
+      max-width: 70px;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      display: block;
+    }
+
+    .integralis-link {
       text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
-    .rodape a:hover {
-      text-decoration: underline;
+    .integralis-nome {
+      font-weight: 800;
+      color: #000;
+      letter-spacing: .5px;
+    }
+
+    .integralis-solucoes {
+      font-weight: 800;
+      color: var(--integralis-solucoes);
+      letter-spacing: .5px;
     }
 
     @media (min-width: 520px) {
@@ -357,6 +456,7 @@
   <div class="wrap">
     <div class="card">
       <div class="topo">
+        <img src="logo-arraia.png" alt="Logo Arraiá da Missão" class="topo-logo">
         <h1>Venda de Rifa</h1>
         <p>Escolha o número direto na cartela</p>
       </div>
@@ -393,6 +493,15 @@
 
         <div id="msg" class="msg"></div>
 
+        <div class="acoes-topo">
+          <button type="button" class="btn-vendidos" id="btnVerVendidos">Ver lista de números vendidos</button>
+        </div>
+
+        <div class="painel-vendidos" id="painelVendidos">
+          <h4>Números vendidos</h4>
+          <div id="listaVendidos" class="lista-vendidos"></div>
+        </div>
+
         <div class="secao-cartela">
           <h3>Cartela de pontos</h3>
 
@@ -422,10 +531,15 @@
       </div>
 
       <div class="rodape">
-        Criado por
-        <a href="https://integralissolucoes.com.br/" target="_blank" rel="noopener noreferrer">
-          Integralis Soluções
-        </a>
+        <div class="rodape-wrap">
+          <a href="https://integralissolucoes.com.br/" target="_blank" rel="noopener noreferrer" class="integralis-link">
+            <img src="logo-integralis.png" alt="Logo Integralis Soluções" class="logo-integralis">
+          </a>
+          <a href="https://integralissolucoes.com.br/" target="_blank" rel="noopener noreferrer" class="integralis-link">
+            <span class="integralis-nome">INTEGRALIS</span>
+            <span class="integralis-solucoes">SOLUÇÕES</span>
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -445,6 +559,9 @@
     const msg = document.getElementById("msg");
     const gradePontos = document.getElementById("gradePontos");
     const numeroEscolhidoEl = document.getElementById("numeroEscolhido");
+    const btnVerVendidos = document.getElementById("btnVerVendidos");
+    const painelVendidos = document.getElementById("painelVendidos");
+    const listaVendidos = document.getElementById("listaVendidos");
 
     const filtroTodos = document.getElementById("filtroTodos");
     const filtroLivres = document.getElementById("filtroLivres");
@@ -499,6 +616,27 @@
       preencherGradePontos(pontosCache);
     }
 
+    function preencherListaVendidos(lista) {
+      const vendidos = Array.isArray(lista) ? lista.filter(item => !statusEhLivre(item.status)) : [];
+      listaVendidos.innerHTML = "";
+
+      if (vendidos.length === 0) {
+        listaVendidos.innerHTML = '<div class="sem-vendidos">Nenhum número vendido ainda.</div>';
+        return;
+      }
+
+      vendidos.forEach(function(item) {
+        const div = document.createElement("div");
+        div.className = "item-vendido";
+        div.innerHTML = `
+          <strong>Número ${item.numero}</strong>
+          <div>Nome: ${item.cliente || '-'}</div>
+          <div>Telefone: ${item.telefone || '-'}</div>
+        `;
+        listaVendidos.appendChild(div);
+      });
+    }
+
     function preencherGradePontos(lista) {
       gradePontos.innerHTML = "";
 
@@ -550,6 +688,7 @@
         mostrarMensagem("Esse link está sem código de vendedor. Use o link com ?v=V001", "erro");
         vendedorInfo.textContent = "Vendedor não identificado";
         preencherGradePontos([]);
+        preencherListaVendidos([]);
         return;
       }
 
@@ -566,6 +705,7 @@
           disponiveisEl.textContent = "--";
           faixaInfo.textContent = "Não foi possível carregar a faixa.";
           preencherGradePontos([]);
+          preencherListaVendidos([]);
           return;
         }
 
@@ -585,10 +725,12 @@
 
         atualizarNumeroEscolhido();
         preencherGradePontos(pontosCache);
+        preencherListaVendidos(pontosCache);
       } catch (erro) {
         mostrarMensagem("Erro ao carregar os dados do vendedor.", "erro");
         vendedorInfo.textContent = "Erro ao carregar vendedor";
         preencherGradePontos([]);
+        preencherListaVendidos([]);
       } finally {
         setLoading(false);
       }
@@ -645,6 +787,13 @@
         setLoading(false);
       }
     }
+
+    btnVerVendidos.addEventListener("click", function() {
+      painelVendidos.classList.toggle("aberto");
+      btnVerVendidos.textContent = painelVendidos.classList.contains("aberto")
+        ? "Ocultar lista de números vendidos"
+        : "Ver lista de números vendidos";
+    });
 
     filtroTodos.addEventListener("click", function() {
       filtroAtual = "todos";
