@@ -258,6 +258,60 @@
         font-size: 24px;
       }
     }
+    .grade-pontos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.ponto {
+  position: relative;
+  border-radius: 14px;
+  padding: 16px 8px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 18px;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+}
+
+.ponto.livre {
+  background: #dcfce7;
+  color: #166534;
+  border-color: #86efac;
+}
+
+.ponto.vendido {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #fca5a5;
+}
+
+.ponto .numero {
+  display: block;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.ponto .legenda {
+  display: block;
+  font-size: 11px;
+  margin-top: 6px;
+  font-weight: 700;
+}
+
+.ponto .xis {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  font-weight: bold;
+  color: rgba(153, 27, 27, 0.9);
+  pointer-events: none;
+}
   </style>
 </head>
 <body>
@@ -303,13 +357,16 @@
         <div id="msg" class="msg"></div>
 
         <div class="secao-tabela">
-          <h3>Situação dos pontos</h3>
+  <h3>Situação dos pontos</h3>
 
-          <div class="filtros">
-            <button type="button" id="filtroTodos" class="ativo">Todos</button>
-            <button type="button" id="filtroLivres">Somente livres</button>
-            <button type="button" id="filtroVendidos">Somente vendidos</button>
-          </div>
+  <div class="filtros">
+    <button type="button" id="filtroTodos" class="ativo">Todos</button>
+    <button type="button" id="filtroLivres">Somente livres</button>
+    <button type="button" id="filtroVendidos">Somente vendidos</button>
+  </div>
+
+  <div id="gradePontos" class="grade-pontos"></div>
+</div>
 
           <div class="table-wrap">
             <table id="tabelaPontos">
