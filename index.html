@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Venda de Rifa</title>
+  <style>
+    :root {
+      --verde: #166534;
+      --verde-escuro: #14532d;
+      --fundo: #f4f7f4;
+      --card: #ffffff;
+      --texto: #1f2937;
+      --suave: #6b7280;
+      --borda: #d1d5db;
+      --erro-bg: #fee2e2;
+      --erro-tx: #991b1b;
+      --ok-bg: #dcfce7;
+      --ok-tx: #166534;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #eaf7ee 0%, #f8f8f8 100%);
+      color: var(--texto);
+    }
+
+    .wrap {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 520px;
+      background: var(--card);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 12px 32px rgba(0,0,0,.08);
+      border: 1px solid rgba(0,0,0,.06);
+    }
+
+    .topo {
+      background: var(--verde);
+      color: #fff;
+      padding: 24px 20px;
+      text-align: center;
+    }
+
+    .topo h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .topo p {
+      margin: 8px 0 0;
+      font-size: 14px;
+      opacity: .95;
+    }
+
+    .conteudo {
+      padding: 20px;
+    }
+
+    .vendedor-box {
+      display: inline-block;
+      background: #ecfdf5;
+      color: var(--verde);
+      border: 1px solid #bbf7d0;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: bold;
+      margin-bottom: 14px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stat {
+      border: 1px solid var(--borda);
+      border-radius: 14px;
+      padding: 14px;
+      background: #fafafa;
+    }
+
+    .stat small {
+      display: block;
+      color: var(--suave);
+      margin-bottom: 4px;
+    }
+
+    .stat strong {
+      font-size: 24px;
+    }
+
+    label {
+      display: block;
+      margin: 14px 0 6px;
+      font-weight: bold;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid var(--borda);
+      font-size: 16px;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--verde);
+      box-shadow: 0 0 0 3px rgba(22,101,52,.12);
+    }
+
+    button {
+      margin-top: 18px;
+      background: var(--verde);
+      color: #fff;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: var(--verde-escuro);
+    }
+
+    .hint {
+      margin-top: 6px;
+      color: var(--suave);
+      font-size: 13px;
+    }
+
+    .msg {
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      display: none;
+      font-size: 14px;
+    }
+
+    .msg.ok {
+      display: block;
+      background: var(--ok-bg);
+      color: var(--ok-tx);
+    }
+
+    .msg.erro {
+      display: block;
+      background: var(--erro-bg);
+      color: var(--erro-tx);
+    }
+
+    .loading {
+      opacity: .7;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="topo">
+        <h1>Venda de Rifa</h1>
+        <p>Link exclusivo por vendedor</p>
+      </div>
+
+      <div class="conteudo" id="app">
+        <div class="vendedor-box" id="vendedorInfo">Carregando vendedor...</div>
+
+        <div class="stats">
+          <div class="stat">
+            <small>Vendidos na sua cartela</small>
+            <strong id="vendidos">--</strong>
+          </div>
+          <div class="stat">
+            <small>Disponíveis na sua cartela</small>
+            <strong id="disponiveis">--</strong>
+          </div>
+        </div>
+
+        <label for="cliente">Nome do cliente</label>
+        <input type="text" id="cliente" placeholder="Digite o nome completo">
+
+        <label for="telefone">Telefone</label>
+        <input type="tel" id="telefone" placeholder="(85) 99999-9999">
+
+        <label for="numero">Número da rifa</label>
+        <select id="numero">
+          <option value="">Carregando números...</option>
+        </select>
+
+        <div class="hint" id="faixaInfo">
+          Somente os números da sua faixa aparecem aqui.
+        </div>
+
+        <button id="btnSalvar" type="button">Registrar venda</button>
+
+        <div id="msg" class="msg"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = "https://script.google.com/macros/s/AKfycbxZveduns1HYLWlg61OmNftJatG8rIYolRuHQ58spw-8khlZhE0ZHQGY-_6vBmSGlh5/exec";
+    const vendedor = (new URLSearchParams(window.location.search).get("v") || "").trim().toUpperCase();
+
+    const app = document.getElementById("app");
+    const vendedorInfo = document.getElementById("vendedorInfo");
+    const vendidosEl = document.getElementById("vendidos");
+    const disponiveisEl = document.getElementById("disponiveis");
+    const faixaInfo = document.getElementById("faixaInfo");
+    const numeroSelect = document.getElementById("numero");
+    const clienteInput = document.getElementById("cliente");
+    const telefoneInput = document.getElementById("telefone");
+    const btnSalvar = document.getElementById("btnSalvar");
+    const msg = document.getElementById("msg");
+
+    function mostrarMensagem(texto, tipo) {
+      msg.className = "msg " + tipo;
+      msg.textContent = texto;
+    }
+
+    function limparMensagem() {
+      msg.className = "msg";
+      msg.textContent = "";
+    }
+
+    function setLoading(ativo, textoBotao = "Registrar venda") {
+      if (ativo) {
+        app.classList.add("loading");
+        btnSalvar.textContent = textoBotao;
+      } else {
+        app.classList.remove("loading");
+        btnSalvar.textContent = "Registrar venda";
+      }
+    }
+
+    function preencherNumeros(lista) {
+      numeroSelect.innerHTML = '<option value="">Selecione um número</option>';
+
+      if (!Array.isArray(lista) || lista.length === 0) {
+        numeroSelect.innerHTML = '<option value="">Nenhum número disponível</option>';
+        return;
+      }
+
+      lista.forEach(function(numero) {
+        const option = document.createElement("option");
+        option.value = numero;
+        option.textContent = numero;
+        numeroSelect.appendChild(option);
+      });
+    }
+
+    async function iniciar() {
+      limparMensagem();
+
+      if (!vendedor) {
+        mostrarMensagem("Esse link está sem código de vendedor. Use o link com ?v=V001", "erro");
+        vendedorInfo.textContent = "Vendedor não identificado";
+        preencherNumeros([]);
+        return;
+      }
+
+      setLoading(true, "Carregando...");
+
+      try {
+        const res = await fetch(API + "?acao=inicial&v=" + encodeURIComponent(vendedor));
+        const dados = await res.json();
+
+        if (!dados.ok) {
+          mostrarMensagem(dados.msg || "Erro ao carregar dados.", "erro");
+          vendedorInfo.textContent = "Vendedor não encontrado";
+          vendidosEl.textContent = "--";
+          disponiveisEl.textContent = "--";
+          faixaInfo.textContent = "Não foi possível carregar a faixa.";
+          preencherNumeros([]);
+          return;
+        }
+
+        vendedorInfo.textContent = dados.vendedor.codigo + " - " + dados.vendedor.nome;
+        vendidosEl.textContent = dados.vendidos;
+        disponiveisEl.textContent = dados.disponiveis;
+        faixaInfo.textContent = "Sua faixa: " + dados.vendedor.inicio + " a " + dados.vendedor.fim;
+
+        preencherNumeros(dados.numeros);
+      } catch (erro) {
+        mostrarMensagem("Erro ao carregar os dados do vendedor.", "erro");
+        vendedorInfo.textContent = "Erro ao carregar vendedor";
+        preencherNumeros([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function salvarVenda() {
+      limparMensagem();
+
+      if (!vendedor) {
+        mostrarMensagem("Link sem vendedor definido.", "erro");
+        return;
+      }
+
+      const nome = clienteInput.value.trim();
+      const telefone = telefoneInput.value.trim();
+      const numero = numeroSelect.value;
+
+      if (!nome || !telefone || !numero) {
+        mostrarMensagem("Preencha todos os campos.", "erro");
+        return;
+      }
+
+      setLoading(true, "Salvando...");
+
+      try {
+        const res = await fetch(API, {
+          method: "POST",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify({
+            vendedor: vendedor,
+            nome: nome,
+            telefone: telefone,
+            numero: numero
+          })
+        });
+
+        const resposta = await res.json();
+
+        if (resposta.ok) {
+          mostrarMensagem(resposta.msg, "ok");
+          clienteInput.value = "";
+          telefoneInput.value = "";
+          numeroSelect.value = "";
+          await iniciar();
+        } else {
+          mostrarMensagem(resposta.msg || "Erro ao registrar venda.", "erro");
+        }
+      } catch (erro) {
+        mostrarMensagem("Erro ao enviar os dados.", "erro");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    btnSalvar.addEventListener("click", salvarVenda);
+
+    iniciar();
+  </script>
+</body>
+</html>
