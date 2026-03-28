@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Administrativo - Rifa</title>
+  <style>
+    :root {
+      --verde: #166534;
+      --verde-escuro: #14532d;
+      --azul: #1d4ed8;
+      --texto: #1f2937;
+      --suave: #6b7280;
+      --borda: #d1d5db;
+      --bg: #f3f6f4;
+      --card: #ffffff;
+      --erro-bg: #fee2e2;
+      --erro-tx: #991b1b;
+      --ok-bg: #dcfce7;
+      --ok-tx: #166534;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--texto);
+    }
+
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .hero {
+      background: var(--verde);
+      color: #fff;
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    .hero p {
+      margin: 0;
+      opacity: .95;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--borda);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 6px 16px rgba(0,0,0,.04);
+    }
+
+    .card small {
+      display: block;
+      color: var(--suave);
+      margin-bottom: 6px;
+    }
+
+    .card strong {
+      font-size: 24px;
+    }
+
+    .box {
+      background: var(--card);
+      border: 1px solid var(--borda);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 6px 16px rgba(0,0,0,.04);
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 20px;
+    }
+
+    .msg {
+      margin-bottom: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      display: none;
+      font-size: 14px;
+    }
+
+    .msg.ok {
+      display: block;
+      background: var(--ok-bg);
+      color: var(--ok-tx);
+    }
+
+    .msg.erro {
+      display: block;
+      background: var(--erro-bg);
+      color: var(--erro-tx);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 860px;
+    }
+
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    thead tr {
+      background: #f9fafb;
+    }
+
+    th {
+      font-weight: bold;
+    }
+
+    .acoes {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    input, button {
+      border: 1px solid var(--borda);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    input {
+      width: 100%;
+    }
+
+    .mini-input {
+      width: 110px;
+    }
+
+    .mini-obs {
+      width: 180px;
+    }
+
+    button {
+      background: var(--verde);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: var(--verde-escuro);
+    }
+
+    .btn-refresh {
+      background: var(--azul);
+    }
+
+    .btn-refresh:hover {
+      background: #1e40af;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .valor-negativo {
+      color: #991b1b;
+      font-weight: bold;
+    }
+
+    .valor-positivo {
+      color: #166534;
+      font-weight: bold;
+    }
+
+    @media (max-width: 700px) {
+      .cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <h1>Painel Administrativo da Rifa</h1>
+      <p>Acompanhe vendas, recebimentos e saldos dos vendedores</p>
+    </div>
+
+    <div id="msg" class="msg"></div>
+
+    <div class="top-actions">
+      <button class="btn-refresh" id="btnAtualizar">Atualizar painel</button>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <small>Total vendidos</small>
+        <strong id="totalVendidos">--</strong>
+      </div>
+      <div class="card">
+        <small>Total disponíveis</small>
+        <strong id="totalDisponiveis">--</strong>
+      </div>
+      <div class="card">
+        <small>Total arrecadado</small>
+        <strong id="totalArrecadado">--</strong>
+      </div>
+      <div class="card">
+        <small>Total pendente</small>
+        <strong id="totalPendente">--</strong>
+      </div>
+    </div>
+
+    <div class="box">
+      <h2>Resumo por vendedor</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Vendedor</th>
+              <th>Faixa</th>
+              <th>Vendidos</th>
+              <th>Total vendido</th>
+              <th>Recebido</th>
+              <th>Pendente</th>
+              <th>Dar baixa</th>
+            </tr>
+          </thead>
+          <tbody id="corpoVendedores"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="box">
+      <h2>Histórico de recebimentos</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Código</th>
+              <th>Vendedor</th>
+              <th>Valor</th>
+              <th>Observação</th>
+            </tr>
+          </thead>
+          <tbody id="corpoHistorico"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = "https://script.google.com/macros/s/AKfycbxZveduns1HYLWlg61OmNftJatG8rIYolRuHQ58spw-8khlZhE0ZHQGY-_6vBmSGlh5/exec";
+
+    const msg = document.getElementById("msg");
+    const totalVendidos = document.getElementById("totalVendidos");
+    const totalDisponiveis = document.getElementById("totalDisponiveis");
+    const totalArrecadado = document.getElementById("totalArrecadado");
+    const totalPendente = document.getElementById("totalPendente");
+    const corpoVendedores = document.getElementById("corpoVendedores");
+    const corpoHistorico = document.getElementById("corpoHistorico");
+    const btnAtualizar = document.getElementById("btnAtualizar");
+
+    function formatarMoeda(valor) {
+      return Number(valor || 0).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+      });
+    }
+
+    function mostrarMensagem(texto, tipo) {
+      msg.className = "msg " + tipo;
+      msg.textContent = texto;
+    }
+
+    function limparMensagem() {
+      msg.className = "msg";
+      msg.textContent = "";
+    }
+
+    function formatarData(data) {
+      if (!data) return "-";
+      const d = new Date(data);
+      if (isNaN(d)) return String(data);
+      return d.toLocaleString("pt-BR");
+    }
+
+    async function carregarResumoAdmin() {
+      const res = await fetch(API + "?acao=adminResumo");
+      const dados = await res.json();
+
+      if (!dados.ok) {
+        throw new Error(dados.msg || "Erro ao carregar resumo.");
+      }
+
+      totalVendidos.textContent = dados.resumo.totalVendidos;
+      totalDisponiveis.textContent = dados.resumo.totalDisponiveis;
+      totalArrecadado.textContent = formatarMoeda(dados.resumo.totalArrecadado);
+      totalPendente.textContent = formatarMoeda(dados.resumo.totalPendente);
+
+      corpoVendedores.innerHTML = "";
+
+      dados.vendedores.forEach(v => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+          <td>${v.codigo}</td>
+          <td>${v.nome}</td>
+          <td>${v.faixa}</td>
+          <td>${v.vendidos}</td>
+          <td>${formatarMoeda(v.totalVendido)}</td>
+          <td class="${v.recebido > 0 ? 'valor-positivo' : ''}">${formatarMoeda(v.recebido)}</td>
+          <td class="${v.pendente > 0 ? 'valor-negativo' : 'valor-positivo'}">${formatarMoeda(v.pendente)}</td>
+          <td>
+            <div class="acoes">
+              <input class="mini-input" type="number" step="0.01" min="0" placeholder="Valor" id="valor_${v.codigo}">
+              <input class="mini-obs" type="text" placeholder="Observação" id="obs_${v.codigo}">
+              <button type="button" onclick="darBaixa('${v.codigo}')">Salvar</button>
+            </div>
+          </td>
+        `;
+
+        corpoVendedores.appendChild(tr);
+      });
+    }
+
+    async function carregarHistorico() {
+      const res = await fetch(API + "?acao=adminHistorico");
+      const dados = await res.json();
+
+      if (!dados.ok) {
+        throw new Error(dados.msg || "Erro ao carregar histórico.");
+      }
+
+      corpoHistorico.innerHTML = "";
+
+      if (!dados.historico || dados.historico.length === 0) {
+        corpoHistorico.innerHTML = `
+          <tr>
+            <td colspan="5">Nenhum recebimento registrado.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      dados.historico.forEach(item => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${formatarData(item.dataHora)}</td>
+          <td>${item.vendedorCodigo}</td>
+          <td>${item.vendedorNome}</td>
+          <td>${formatarMoeda(item.valorRecebido)}</td>
+          <td>${item.observacao || "-"}</td>
+        `;
+        corpoHistorico.appendChild(tr);
+      });
+    }
+
+    async function darBaixa(codigo) {
+      limparMensagem();
+
+      const valorInput = document.getElementById("valor_" + codigo);
+      const obsInput = document.getElementById("obs_" + codigo);
+
+      const valor = valorInput.value;
+      const observacao = obsInput.value;
+
+      if (!valor || Number(valor) <= 0) {
+        mostrarMensagem("Informe um valor válido para dar baixa.", "erro");
+        return;
+      }
+
+      try {
+        const res = await fetch(API, {
+          method: "POST",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify({
+            acao: "registrarRecebimento",
+            vendedorCodigo: codigo,
+            valorRecebido: valor,
+            observacao: observacao
+          })
+        });
+
+        const dados = await res.json();
+
+        if (dados.ok) {
+          mostrarMensagem(dados.msg, "ok");
+          valorInput.value = "";
+          obsInput.value = "";
+          await carregarTudo();
+        } else {
+          mostrarMensagem(dados.msg || "Erro ao registrar recebimento.", "erro");
+        }
+      } catch (erro) {
+        mostrarMensagem("Erro ao salvar recebimento.", "erro");
+      }
+    }
+
+    async function carregarTudo() {
+      limparMensagem();
+      await carregarResumoAdmin();
+      await carregarHistorico();
+    }
+
+    btnAtualizar.addEventListener("click", carregarTudo);
+    window.darBaixa = darBaixa;
+
+    carregarTudo();
+  </script>
+</body>
+</html>
